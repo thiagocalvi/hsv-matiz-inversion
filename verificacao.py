@@ -21,7 +21,7 @@ def verificar_resultado(img_original, img_resultado, H, d, mask, hsv_orig, hsv_m
     Usa distância circular para comparação de matizes.
     """
     print("\n╔══════════════════════════════════════════════════╗")
-    print("║           VERIFICAÇÃO MATEMÁTICA                ║")
+    print("║            VERIFICAÇÃO MATEMÁTICA                ║")
     print("╚══════════════════════════════════════════════════╝")
 
     # Verificação no espaço HSV float (sem perdas de quantização)
@@ -398,6 +398,6 @@ def exibir_comparacao(
     plt.savefig(
         caminho_comparacao, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor()
     )
-    # TODO: Corrigir, não funciona
+
     plt.show()
     print(f"  Comparação salva em: {caminho_comparacao}")

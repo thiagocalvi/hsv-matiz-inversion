@@ -68,6 +68,10 @@ def construir_mascara(h, H, d):
     low = (H - d) % 360
     high = (H + d) % 360
 
+    # Faixa cobre todo o círculo
+    if d >= 180 or low == high:
+        return np.ones_like(h, dtype=bool)
+
     if low <= high:
         mask = (h >= low) & (h <= high)
     else:
