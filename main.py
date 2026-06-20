@@ -5,14 +5,12 @@ Recebe uma imagem colorida e dois parâmetros H e d,
 inverte os matizes h ∈ [H-d, H+d] aplicando h' = (h - 180) mod 360,
 preservando S e V.
 
-Uso: python programa.py <imagem> <H> <d> [flag]
+Uso: python main.py <imagem> <H> <d>
   <imagem>  caminho da imagem (jpg, png, bmp, webp, tiff)
   <H>       valor do matiz central (0 a 360)
   <d>       raio da faixa (0 a 180)
-  [flag]    -c para rodar com verificação completa
-            -n para apenas gerar a imagem resultante
 
-Exemplo: python programa.py flores.jpg 0 30 -c
+Exemplo: python main.py flores.jpg 0 30
 """
 
 import os
@@ -20,7 +18,6 @@ import sys
 
 import cv2
 import numpy as np
-
 
 def carregar_imagem(caminho):
     """Carrega imagem e valida existência."""
@@ -111,9 +108,6 @@ def inverter_matizes(img_bgr, H, d):
     # Extrai banda H como float64 para precisão
     h = hsv[:, :, 0].astype(np.float64)
 
-    # Guarda cópia do HSV original para verificação
-    hsv_original = hsv.copy()
-
     # Constrói máscara da faixa [H-d, H+d]
     mask = construir_mascara(h, H, d)
 
@@ -123,13 +117,10 @@ def inverter_matizes(img_bgr, H, d):
     # Atualiza somente a banda H
     hsv[:, :, 0] = h_invertido.astype(np.float32)
 
-    # Guarda HSV modificado para verificação
-    hsv_modificado = hsv.copy()
-
     # Converte de volta para BGR
     img_resultado_bgr = hsv_float_para_bgr(hsv)
 
-    return img_resultado_bgr, mask, hsv_original, hsv_modificado
+    return img_resultado_bgr, mask
 
 
 def salvar_resultado(img_resultado, caminho_original, H, d):
@@ -142,27 +133,13 @@ def salvar_resultado(img_resultado, caminho_original, H, d):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) not in (4, 5):
+    if len(sys.argv) < 4:
         print(__doc__)
         sys.exit(1)
 
     caminho = sys.argv[1]
     H = float(sys.argv[2])
     d = float(sys.argv[3])
-
-    rodar_verificacao = False
-    if len(sys.argv) == 5:
-        flag = sys.argv[4]
-
-        if flag == "-c":
-            rodar_verificacao = True
-        elif flag == "-n":
-            rodar_verificacao = False
-        else:
-            print(
-                f"Erro: flag '{flag}' inválida. Use -c para verificação, -n para normal ou -a para ambas."
-            )
-            sys.exit(1)
 
     if not (0 <= H <= 360):
         print("Erro: H deve estar entre 0 e 360")
@@ -185,7 +162,7 @@ if __name__ == "__main__":
         f"\n  Imagem carregada: {img_original.shape[1]}×{img_original.shape[0]} pixels"
     )
 
-    img_resultado, mask, hsv_orig, hsv_mod = inverter_matizes(img_original, H, d)
+    img_resultado, mask = inverter_matizes(img_original, H, d)
     print(
         f"  Pixels afetados: {mask.sum():,} de {mask.size:,} "
         f"({100.0 * mask.sum() / mask.size:.1f}%)"
@@ -193,21 +170,4 @@ if __name__ == "__main__":
 
     salvar_resultado(img_resultado, caminho, H, d)
 
-    if rodar_verificacao:
-        from verificacao import exibir_comparacao, verificar_resultado
-
-        verificacao = verificar_resultado(
-            img_original, img_resultado, H, d, mask, hsv_orig, hsv_mod
-        )
-
-        exibir_comparacao(
-            img_original,
-            img_resultado,
-            H,
-            d,
-            mask,
-            hsv_orig,
-            hsv_mod,
-            caminho,
-            verificacao,
-        )
+    print("\n  Processamento concluído com sucesso!")
