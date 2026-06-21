@@ -77,13 +77,6 @@ def construir_mascara(h, H, d):
 
     return mask
 
-
-def distancia_circular(a, b, periodo=360.0):
-    """Distância angular mínima entre dois ângulos."""
-    diff = np.abs(a - b)
-    return np.minimum(diff, periodo - diff)
-
-
 def inverter_matizes(img_bgr, H, d):
     """
     Inverte os matizes da imagem que estão na faixa [H-d, H+d].
@@ -99,8 +92,6 @@ def inverter_matizes(img_bgr, H, d):
     Retorna:
         img_resultado_bgr: imagem resultado BGR (uint8)
         mask: máscara dos pixels afetados
-        hsv_original: HSV float da imagem original (para verificação)
-        hsv_modificado: HSV float do resultado (para verificação)
     """
     # Converte para HSV float (H em [0,360))
     hsv = bgr_para_hsv_float(img_bgr)
